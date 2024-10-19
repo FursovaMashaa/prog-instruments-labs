@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from model_objects import Customer, ShoppingList, CustomerType, Address
+from model_objects import Address, Customer, CustomerType, ShoppingList
+
 
 
 class CustomerMatches:
