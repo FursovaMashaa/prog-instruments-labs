@@ -1,29 +1,29 @@
 from dataclasses import dataclass, field
-from typing import List
+from typing import Optional, Tuple, List, Any
 
 from model_objects import Address, Customer, CustomerType, ShoppingList
 
 
-
 class CustomerMatches:
-    def __init__(self):
+
+    def __init__(self) -> None:
         self.matchTerm = None
         self.customer = None
         self.duplicates = []
 
-    def has_duplicates(self):
-        return self.duplicates
+    def has_duplicates(self) -> bool:
+        return bool(self.duplicates)
 
-    def add_duplicate(self, duplicate):
+    def add_duplicate(self, duplicate: Customer) -> None:
         self.duplicates.append(duplicate)
 
 
 class CustomerDataAccess:
 
-    def __init__(self, db):
+    def __init__(self, db: Database) -> None:
         self.customerDataLayer = CustomerDataLayer(db)
 
-    def loadCompanyCustomer(self, externalId, companyNumber):
+    def loadCompanyCustomer(self, externalId: str, companyNumber: Optional[str]) -> CustomerMatches:
         matches = CustomerMatches()
         matchByExternalId: Customer = self.customerDataLayer.findByExternalId(
             externalId
@@ -47,7 +47,7 @@ class CustomerDataAccess:
 
         return matches
 
-    def loadPersonCustomer(self, externalId):
+    def loadPersonCustomer(self, externalId: str) -> CustomerMatches:
         matches = CustomerMatches()
         matchByPersonalNumber: Customer = self.customerDataLayer.findByExternalId(
             externalId
@@ -59,24 +59,25 @@ class CustomerDataAccess:
         
         return matches
 
-    def updateCustomerRecord(self, customer):
+    def updateCustomerRecord(self, customer: Customer) -> None:
         self.customerDataLayer.updateCustomerRecord(customer)
 
-    def createCustomerRecord(self, customer):
+    def createCustomerRecord(self, customer: Customer) -> Customer:
         return self.customerDataLayer.createCustomerRecord(customer)
 
-    def updateShoppingList(self, customer: Customer, shoppingList: ShoppingList):
+    def updateShoppingList(self, customer: Customer, shoppingList: ShoppingList) -> None:
         customer.addShoppingList(shoppingList)
         self.customerDataLayer.updateShoppingList(shoppingList)
         self.customerDataLayer.updateCustomerRecord(customer)
 
 
 class CustomerDataLayer:
+
     def __init__(self, conn):
         self.conn = conn
         self.cursor = self.conn.cursor()
 
-    def findByExternalId(self, externalId):
+    def findByExternalId(self, externalId: str) -> Optional[Customer]:
         self.cursor.execute(
             'SELECT internalId, externalId, masterExternalId, name, '
             'customerType, companyNumber FROM customers WHERE externalId=?',
@@ -85,7 +86,7 @@ class CustomerDataLayer:
         customer = self._customer_from_sql_select_fields(self.cursor.fetchone())
         return customer
 
-    def _find_addressId(self, customer):
+    def _find_addressId(self, customer: Customer) -> Optional[int]:
         self.cursor.execute(
             'SELECT addressId FROM customers WHERE internalId=?',
             (customer.internalId,)
@@ -95,7 +96,7 @@ class CustomerDataLayer:
             return int(addressId)
         return None
 
-    def _customer_from_sql_select_fields(self, fields):
+    def _customer_from_sql_select_fields(self, fields: Optional[Tuple[Any]]) -> Optional[Customer]:
         if not fields:
             return None
 
@@ -136,7 +137,7 @@ class CustomerDataLayer:
         
         return customer
 
-    def findByMasterExternalId(self, masterExternalId):
+    def findByMasterExternalId(self, masterExternalId: str) -> Optional[Customer]:
         self.cursor.execute(
             'SELECT internalId, externalId, masterExternalId, name, '
             'customerType, companyNumber FROM customers WHERE masterExternalId=?',
@@ -144,7 +145,7 @@ class CustomerDataLayer:
         )
         return self._customer_from_sql_select_fields(self.cursor.fetchone())
 
-    def findByCompanyNumber(self, companyNumber):
+    def findByCompanyNumber(self, companyNumber: Optional[str]) -> Optional[Customer]:
         self.cursor.execute(
             'SELECT internalId, externalId, masterExternalId, name, '
             'customerType, companyNumber FROM customers WHERE companyNumber=?',
@@ -152,7 +153,7 @@ class CustomerDataLayer:
         )
         return self._customer_from_sql_select_fields(self.cursor.fetchone())
 
-    def createCustomerRecord(self, customer):
+    def createCustomerRecord(self, customer: Customer) -> Customer:
         customer.internalId = self._nextid("customers")
         self.cursor.execute(
             'INSERT INTO customers VALUES (?, ?, ?, ?, ?, ?, ?);', (
@@ -197,14 +198,14 @@ class CustomerDataLayer:
         self.conn.commit()
         return customer
 
-    def _nextid(self, tablename):
+    def _nextid(self, tablename: str) -> int:
         self.cursor.execute(f'SELECT MAX(ROWID) AS max_id FROM {tablename};')
         (id,) = self.cursor.fetchone()
         if id:
             return int(id) + 1
         return 1
 
-    def updateCustomerRecord(self, customer):
+    def updateCustomerRecord(self, customer: Customer) -> None:
         self.cursor.execute(
             'UPDATE customers SET externalId=?, masterExternalId=?, name=?, '
             'customerType=?, companyNumber=? WHERE internalId=?',
@@ -259,5 +260,5 @@ class CustomerDataLayer:
 
         self.conn.commit()
 
-    def updateShoppingList(self, shoppingList):
+    def updateShoppingList(self, shoppingList: ShoppingList) -> None:
         pass

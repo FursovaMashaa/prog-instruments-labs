@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Optional
 
 from customer_data_access import CustomerMatches
 from model_objects import Customer, CustomerType, ExternalCustomer
@@ -11,10 +11,10 @@ class ConflictException(Exception):
 
 class CustomerSync:
 
-    def __init__(self, customerDataAccess):
+    def __init__(self, customerDataAccess: CustomerDataAccess) -> None:
         self.customerDataAccess = customerDataAccess
 
-    def syncWithDataLayer(self, externalCustomer):
+    def syncWithDataLayer(self, externalCustomer: ExternalCustomer) -> bool:
         customerMatches: CustomerMatches
         if externalCustomer.isCompany:
             customerMatches = self.loadCompany(externalCustomer)
@@ -48,19 +48,18 @@ class CustomerSync:
 
         return created
 
-    def updateRelations(self, externalCustomer: ExternalCustomer, 
-                        customer: Customer):
+    def updateRelations(self, externalCustomer: ExternalCustomer, customer: Customer) -> None:
         consumerShoppingLists = externalCustomer.shoppingLists
         for consumerShoppingList in consumerShoppingLists:
             self.customerDataAccess.updateShoppingList(
                 customer, consumerShoppingList
             )
 
-    def updateCustomer(self, customer):
+    def updateCustomer(self, customer: Customer) -> Customer:
         return self.customerDataAccess.updateCustomerRecord(customer)
 
     def updateDuplicate(self, externalCustomer: ExternalCustomer, 
-                        duplicate: Customer):
+                        duplicate: Optional[Customer]) -> None:
         if duplicate is None:
             duplicate = Customer()
             duplicate.externalId = externalCustomer.externalId
@@ -74,14 +73,14 @@ class CustomerSync:
             self.updateCustomer(duplicate)
 
     def updatePreferredStore(self, externalCustomer: ExternalCustomer, 
-                              customer: Customer):
+                              customer: Customer) -> None:
         customer.preferredStore = externalCustomer.preferredStore
 
-    def createCustomer(self, customer) -> Customer:
+    def createCustomer(self, customer: Customer) -> Customer:
         return self.customerDataAccess.createCustomerRecord(customer)
 
     def populateFields(self, externalCustomer: ExternalCustomer, 
-                       customer: Customer):
+                       customer: Customer) -> None:
         customer.name = externalCustomer.name
         if externalCustomer.isCompany:
             customer.companyNumber = externalCustomer.companyNumber
@@ -90,10 +89,10 @@ class CustomerSync:
             customer.customerType = CustomerType.PERSON
 
     def updateContactInfo(self, externalCustomer: ExternalCustomer, 
-                          customer: Customer):
+                      customer: Customer) -> None:
         customer.address = externalCustomer.postalAddress
 
-    def loadCompany(self, externalCustomer) -> CustomerMatches:
+    def loadCompany(self, externalCustomer: ExternalCustomer) -> CustomerMatches:
         externalId = externalCustomer.externalId
         companyNumber = externalCustomer.companyNumber
 
@@ -133,7 +132,7 @@ class CustomerSync:
 
         return customerMatches
 
-    def loadPerson(self, externalCustomer):
+    def loadPerson(self, externalCustomer: ExternalCustomer) -> CustomerMatches:
         externalId = externalCustomer.externalId
 
         customerMatches = self.customerDataAccess.loadPersonCustomer(externalId)
