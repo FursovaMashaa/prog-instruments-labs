@@ -5,7 +5,6 @@ from customer_data_access import CustomerMatches
 from model_objects import Customer, ExternalCustomer, CustomerType
 
 
-
 class ConflictException(Exception):
     pass
 
@@ -94,8 +93,6 @@ class CustomerSync:
                           customer: Customer):
         customer.address = externalCustomer.postalAddress
 
-
-
     def loadCompany(self, externalCustomer) -> CustomerMatches:
         externalId = externalCustomer.externalId
         companyNumber = externalCustomer.companyNumber
@@ -135,7 +132,6 @@ class CustomerSync:
             customerMatches.addDuplicate(None)
 
         return customerMatches
-
 
     def loadPerson(self, externalCustomer):
         externalId = externalCustomer.externalId

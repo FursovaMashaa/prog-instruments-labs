@@ -18,6 +18,7 @@ class CustomerMatches:
 
 
 class CustomerDataAccess:
+
     def __init__(self, db):
         self.customerDataLayer = CustomerDataLayer(db)
 
@@ -150,7 +151,6 @@ class CustomerDataLayer:
         )
         return self._customer_from_sql_select_fields(self.cursor.fetchone())
 
-
     def createCustomerRecord(self, customer):
         customer.internalId = self._nextid("customers")
         self.cursor.execute(
@@ -257,6 +257,6 @@ class CustomerDataLayer:
                     )
 
         self.conn.commit()
-        
+
     def updateShoppingList(self, shoppingList):
         pass
