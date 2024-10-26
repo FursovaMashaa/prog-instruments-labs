@@ -11,7 +11,7 @@ class CustomerMatches:
         """
         Инициализация экземпляра класса CustomerMatches.
         """
-        self.matchTerm = None
+        self.match_term = None
         self.customer = None
         self.duplicates = []
 
@@ -45,10 +45,10 @@ class CustomerDataAccess:
         Args:
             db: Объект базы данных для доступа к данным клиентов.
         """
-        self.customerDataLayer = CustomerDataLayer(db)
+        self.customer_data_layer = CustomerDataLayer(db)
 
-    def loadCompanyCustomer(
-        self, externalId: str, companyNumber: Optional[str]
+    def load_company_customer(
+        self, external_id: str, company_number: Optional[str]
     ) -> CustomerMatches:
         """
         Загружает информацию о компании-клиенте по внешнему идентификатору и номеру компании.
@@ -61,29 +61,29 @@ class CustomerDataAccess:
             CustomerMatches: Объект с информацией о совпадениях клиентов.
         """
         matches = CustomerMatches()
-        matchByExternalId: Customer = (
-            self.customerDataLayer.findByMasterExternalId(externalId)
+        match_by_external_id: Customer = (
+            self.customer_data_layer.find_by_master_external_id(external_id)
         )
 
-        if matchByExternalId is not None:
-            matches.customer = matchByExternalId
-            matches.matchTerm = "ExternalId"
-            matchByMasterId: Customer = (
-                self.customerDataLayer.findByMasterExternalId(externalId)
+        if match_by_external_id is not None:
+            matches.customer = match_by_external_id
+            matches.match_term = "ExternalId"
+            match_by_master_id: Customer = (
+                self.customer_data_layer.find_by_master_external_id(external_id)
             )
-            if matchByMasterId is not None:
-                matches.add_duplicate(matchByMasterId)
+            if match_by_master_id is not None:
+                matches.add_duplicate(match_by_master_id)
         else:
-            matchByCompanyNumber: Customer = (
-                self.customerDataLayer.findByCompanyNumber(companyNumber)
+            match_by_company_number: Customer = (
+                self.customer_data_layer.find_by_company_number(company_number)
             )
-            if matchByCompanyNumber is not None:
-                matches.customer = matchByCompanyNumber
-                matches.matchTerm = "CompanyNumber"
+            if match_by_company_number is not None:
+                matches.customer = match_by_company_number
+                matches.match_term = "CompanyNumber"
 
         return matches
 
-    def loadPersonCustomer(self, externalId: str) -> CustomerMatches:
+    def load_person_customer(self, external_id: str) -> CustomerMatches:
         """
         Загружает информацию о личном клиенте по внешнему идентификатору.
 
@@ -94,26 +94,26 @@ class CustomerDataAccess:
             CustomerMatches: Объект с информацией о совпадениях клиентов.
         """
         matches = CustomerMatches()
-        matchByPersonalNumber: Customer = (
-            self.customerDataLayer.findByExternalId(externalId)
+        match_by_personal_number: Customer = (
+            self.customer_data_layer.find_by_external_id(external_id)
         )
 
-        matches.customer = matchByPersonalNumber
-        if matchByPersonalNumber is not None:
-            matches.matchTerm = "ExternalId"
+        matches.customer = match_by_personal_number
+        if match_by_personal_number is not None:
+            matches.match_term = "ExternalId"
 
         return matches
 
-    def updateCustomerRecord(self, customer: Customer) -> None:
+    def update_customer_record(self, customer: Customer) -> None:
         """
         Обновляет запись клиента в базе данных.
 
         Args:
             customer (Customer): Клиент, чью запись необходимо обновить.
         """
-        self.customerDataLayer.updateCustomerRecord(customer)
+        self.customer_data_layer.update_customer_record(customer)
 
-    def createCustomerRecord(self, customer: Customer) -> Customer:
+    def create_customer_record(self, customer: Customer) -> Customer:
         """
         Создает новую запись клиента в базе данных.
 
@@ -123,10 +123,10 @@ class CustomerDataAccess:
         Returns:
             Customer: Созданная запись клиента.
         """
-        return self.customerDataLayer.createCustomerRecord(customer)
+        return self.customer_data_layer.create_customer_record(customer)
 
-    def updateShoppingList(
-        self, customer: Customer, shoppingList: ShoppingList
+    def update_shopping_list(
+        self, customer: Customer, shopping_list: ShoppingList
     ) -> None:
         """
         Обновляет список покупок клиента и запись клиента в базе данных.
@@ -135,9 +135,9 @@ class CustomerDataAccess:
             customer (Customer): Клиент, чей список покупок необходимо обновить.
             shoppingList (ShoppingList): Новый список покупок для обновления.
         """
-        customer.addShoppingList(shoppingList)
-        self.customerDataLayer.updateShoppingList(shoppingList)
-        self.customerDataLayer.updateCustomerRecord(customer)
+        customer.add_shopping_list(shopping_list)
+        self.customer_data_layer.update_shopping_list(shopping_list)
+        self.customer_data_layer.update_customer_record(customer)
 
 
 class CustomerDataLayer:
@@ -159,7 +159,7 @@ class CustomerDataLayer:
         self.conn = conn
         self.cursor = self.conn.cursor()
 
-    def findByExternalId(self, externalId: str) -> Optional[Customer]:
+    def find_by_external_id(self, external_id: str) -> Optional[Customer]:
         """
         Находит клиента по внешнему идентификатору.
 
@@ -172,12 +172,12 @@ class CustomerDataLayer:
         self.cursor.execute(
             "SELECT internalId, externalId, masterExternalId, name,"
             "customerType, companyNumber FROM customers WHERE externalId=?",
-            (externalId,),
+            (external_id,),
         )
-        customer = self._customer_from_sql_select_fields(self.cursor.fetchone())
+        customer = self.customer_from_sql_select_fields(self.cursor.fetchone())
         return customer
 
-    def _find_addressId(self, customer: Customer) -> Optional[int]:
+    def find_address_id(self, customer: Customer) -> Optional[int]:
         """
         Находит идентификатор адреса клиента по внутреннему идентификатору.
 
@@ -188,14 +188,14 @@ class CustomerDataLayer:
             Optional[int]: Идентификатор адреса, если найден, иначе None.
         """
         self.cursor.execute(
-            "SELECT addressId FROM customers WHERE internalId=?", (customer.internalId,)
+            "SELECT addressId FROM customers WHERE internalId=?", (customer.internal_id,)
         )
-        (addressId,) = self.cursor.fetchone()
-        if addressId:
-            return int(addressId)
+        (address_id,) = self.cursor.fetchone()
+        if address_id:
+            return int(address_id)
         return None
 
-    def _customer_from_sql_select_fields(
+    def customer_from_sql_select_fields(
         self, fields: Optional[Tuple[Any]]
     ) -> Optional[Customer]:
         """
@@ -211,47 +211,47 @@ class CustomerDataLayer:
             return None
 
         customer = Customer(
-            internalId=fields[0],
-            externalId=fields[1],
-            masterExternalId=fields[2],
+            internal_id=fields[0],
+            external_id=fields[1],
+            master_external_id=fields[2],
             name=fields[3],
-            customerType=CustomerType(fields[4]),
-            companyNumber=fields[5],
+            customer_type=CustomerType(fields[4]),
+            company_number=fields[5],
         )
 
-        addressId = self._find_addressId(customer)
-        if addressId:
+        address_id = self.find_address_id(customer)
+        if address_id:
             self.cursor.execute(
                 "SELECT street, city, postalCode FROM addresses WHERE addressId=?",
-                (addressId,),
+                (address_id,),
             )
             addresses = self.cursor.fetchone()
             if addresses:
-                (street, city, postalCode) = addresses
-                address = Address(street, city, postalCode)
+                (street, city, postal_code) = addresses
+                address = Address(street, city, postal_code)
                 customer.address = address
 
         self.cursor.execute(
             "SELECT shoppinglistId FROM customer_shoppinglists WHERE customerId=?",
-            (customer.internalId,),
+            (customer.internal_id,),
         )
-        shoppinglists = self.cursor.fetchall()
-        for sl in shoppinglists:
+        shopping_lists = self.cursor.fetchall()
+        for sl in shopping_lists:
             self.cursor.execute(
                 "SELECT products FROM shoppinglists WHERE shoppinglistId=?", (sl[0],)
             )
             products_as_str = self.cursor.fetchone()
             products = products_as_str[0].split(", ")
-            customer.addShoppingList(ShoppingList(products))
+            customer.add_shopping_list(ShoppingList(products))
 
         return customer
 
-    def findByMasterExternalId(self, masterExternalId: str) -> Optional[Customer]:
+    def find_by_master_external_id(self, master_external_id: str) -> Optional[Customer]:
         """
         Находит клиента по мастер-внешнему идентификатору.
 
         Args:
-            masterExternalId (str): Мастер-внешний идентификатор клиента.
+            master_external_id (str): Мастер-внешний идентификатор клиента.
 
         Returns:
             Optional[Customer]: Объект клиента, если найден, иначе None.
@@ -259,16 +259,16 @@ class CustomerDataLayer:
         self.cursor.execute(
             "SELECT internalId, externalId, masterExternalId, name,"
             "customerType, companyNumber FROM customers WHERE masterExternalId=?",
-            (masterExternalId,),
+            (master_external_id,),
         )
-        return self._customer_from_sql_select_fields(self.cursor.fetchone())
+        return self.customer_from_sql_select_fields(self.cursor.fetchone())
 
-    def findByCompanyNumber(self, companyNumber: Optional[str]) -> Optional[Customer]:
+    def find_by_company_number(self, company_number: Optional[str]) -> Optional[Customer]:
         """
         Находит клиента по номеру компании.
 
         Args:
-            companyNumber (Optional[str]): Номер компании клиента.
+            company_number (Optional[str]): Номер компании клиента.
 
         Returns:
             Optional[Customer]: Объект клиента, если найден, иначе None.
@@ -276,11 +276,11 @@ class CustomerDataLayer:
         self.cursor.execute(
             "SELECT internalId, externalId, masterExternalId, name,"
             "customerType, companyNumber FROM customers WHERE companyNumber=?",
-            (companyNumber,),
+            (company_number,),
         )
-        return self._customer_from_sql_select_fields(self.cursor.fetchone())
+        return self.customer_from_sql_select_fields(self.cursor.fetchone())
 
-    def createCustomerRecord(self, customer: Customer) -> Customer:
+    def create_customer_record(self, customer: Customer) -> Customer:
         """
         Создает запись клиента в базе данных и связывает его с адресом и списками покупок.
 
@@ -290,75 +290,75 @@ class CustomerDataLayer:
         Returns:
             Customer: Объект клиента с обновленным внутренним идентификатором.
         """
-        customer.internalId = self._nextid("customers")
+        customer.internal_id = self.next_id("customers")
         self.cursor.execute(
             "INSERT INTO customers VALUES (?, ?, ?, ?, ?, ?, ?);",
             (
-                customer.internalId,
-                customer.externalId,
-                customer.masterExternalId,
+                customer.internal_id,
+                customer.external_id,
+                customer.master_external_id,
                 customer.name,
-                customer.customerType.value,
-                customer.companyNumber,
+                customer.customer_type.value,
+                customer.company_number,
                 None,
             ),
         )
 
         if customer.address:
-            addressId = self._nextid("addresses")
+            address_id = self.next_id("addresses")
             self.cursor.execute(
                 "INSERT INTO addresses VALUES (?, ?, ?, ?)",
                 (
-                    addressId,
+                    address_id,
                     customer.address.street,
                     customer.address.city,
-                    customer.address.postalCode,
+                    customer.address.postal_code,
                 ),
             )
             self.cursor.execute(
                 "UPDATE customers SET addressId=? WHERE internalId=?",
-                (addressId, customer.internalId),
+                (address_id, customer.internal_id),
             )
 
-        if customer.shoppingLists:
-            for sl in customer.shoppingLists:
+        if customer.shopping_lists:
+            for sl in customer.shopping_lists:
                 data = ", ".join(sl)
                 self.cursor.execute(
                     "SELECT shoppinglistId FROM shoppinglists WHERE products=?", (data,)
                 )
-                shoppinglistId = self.cursor.fetchone()
-                if not shoppinglistId:
-                    shoppinglistId = self._nextid("shoppinglists")
+                shopping_list_id = self.cursor.fetchone()
+                if not shopping_list_id:
+                    shopping_list_id = self.next_id("shoppinglists")
                     self.cursor.execute(
                         "INSERT INTO shoppinglists VALUES (?, ?)",
-                        (shoppinglistId, data),
+                        (shopping_list_id, data),
                     )
                 self.cursor.execute(
                     "INSERT INTO customer_shoppinglists VALUES (?, ?)",
-                    (customer.internalId, shoppinglistId),
+                    (customer.internal_id, shopping_list_id),
                 )
 
         self.conn.commit()
         return customer
-    
-    def _nextid(self, tablename: str) -> int:
+
+    def next_id(self, table_name: str) -> int:
         """
         Получает следующий идентификатор для указанной таблицы, 
         основываясь на максимальном значении ROWID.
 
         Args:
-            tablename (str): Имя таблицы, для которой нужно получить следующий идентификатор.
+            table_name (str): Имя таблицы, для которой нужно получить следующий идентификатор.
 
         Returns:
             int: Следующий доступный идентификатор. Если таблица пуста, возвращает 1.
         """
-        self.cursor.execute(f"SELECT MAX(ROWID) AS max_id FROM {tablename};")
-        (id,) = self.cursor.fetchone()
-        if id:
-            return int(id) + 1
+        self.cursor.execute(f"SELECT MAX(ROWID) AS max_id FROM {table_name};")
+        (max_id,) = self.cursor.fetchone()
+        if max_id:
+            return int(max_id) + 1
         return 1
 
-    def updateCustomerRecord(self, customer: Customer) -> None:
+    def update_customer_record(self, customer: Customer) -> None:
         """
         Обновляет запись клиента в базе данных. При необходимости обновляет адрес и списки покупок.
 
@@ -369,66 +369,66 @@ class CustomerDataLayer:
             "UPDATE customers SET externalId=?, masterExternalId=?, name=?, "
             "customerType=?, companyNumber=? WHERE internalId=?",
             (
-                customer.externalId,
-                customer.masterExternalId,
+                customer.external_id,
+                customer.master_external_id,
                 customer.name,
-                customer.customerType.value,
-                customer.companyNumber,
-                customer.internalId,
+                customer.customer_type.value,
+                customer.company_number,
+                customer.internal_id,
             ),
         )
 
         if customer.address:
-            addressId = self._find_addressId(customer)
-            if not addressId:
-                addressId = self._nextid("addresses")
+            address_id = self.find_address_id(customer)
+            if not address_id:
+                address_id = self.next_id("addresses")
                 self.cursor.execute(
                     "INSERT INTO addresses VALUES (?, ?, ?, ?)",
                     (
-                        addressId,
+                        address_id,
                         customer.address.street,
                         customer.address.city,
-                        customer.address.postalCode,
+                        customer.address.postal_code,
                     ),
                 )
                 self.cursor.execute(
                     "UPDATE customers SET addressId=? WHERE internalId=?",
-                    (addressId, customer.internalId),
+                    (address_id, customer.internal_id),
                 )
 
         self.cursor.execute(
             "DELETE FROM customer_shoppinglists WHERE customerId=?",
-            (customer.internalId,),
+            (customer.internal_id,),
         )
-   
-        if customer.shoppingLists:
-            for sl in customer.shoppingLists:
+
+        if customer.shopping_lists:
+            for sl in customer.shopping_lists:
                 products = ",".join(sl.products)
                 self.cursor.execute(
                     "SELECT shoppinglistId FROM shoppinglists WHERE products=?",
                     (products,),
                 )
-                shoppinglistIds = self.cursor.fetchone()
-                if shoppinglistIds is not None:
-                    (shoppinglistId,) = shoppinglistIds
+                shopping_list_ids = self.cursor.fetchone()
+                if shopping_list_ids is not None:
+                    (shopping_list_id,) = shopping_list_ids
                     self.cursor.execute(
                         "INSERT INTO customer_shoppinglists VALUES (?, ?)",
-                        (customer.internalId, shoppinglistId),
+                        (customer.internal_id, shopping_list_id),
                     )
                 else:
-                    shoppinglistId = self._nextid("shoppinglists")
+                    shopping_list_id = self.next_id("shoppinglists")
                     self.cursor.execute(
                         "INSERT INTO shoppinglists VALUES (?, ?)",
-                        (shoppinglistId, products),
+                        (shopping_list_id, products),
                     )
                     self.cursor.execute(
                         "INSERT INTO customer_shoppinglists VALUES (?, ?)",
-                        (customer.internalId, shoppinglistId),
+                        (customer.internal_id, shopping_list_id),
                     )
 
         self.conn.commit()
 
-    def updateShoppingList(self, shoppingList: ShoppingList) -> None:
+    def update_shopping_list(self, shopping_list: ShoppingList) -> None:
         """
         Обновляет запись списка покупок в базе данных.
 

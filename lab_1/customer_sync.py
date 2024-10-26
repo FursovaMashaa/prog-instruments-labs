@@ -10,73 +10,73 @@ class ConflictException(Exception):
 
 
 class CustomerSync:
-    def __init__(self, customerDataAccess) -> None:
+    def __init__(self, customer_data_access) -> None:
         """
         Инициализирует экземпляр класса CustomerSync.
 
         Args:
-            customerDataAccess: Объект доступа к данным клиентов, 
+            customer_data_access: Объект доступа к данным клиентов, 
             используемый для взаимодействия с базой данных.
         """
-        self.customerDataAccess = customerDataAccess
+        self.customer_data_access = customer_data_access
 
-    def syncWithDataLayer(self, externalCustomer: ExternalCustomer) -> bool:
+    def sync_with_data_layer(self, external_customer: ExternalCustomer) -> bool:
         """
         Синхронизирует данные клиента с внешним источником данных.
 
         Args:
-            externalCustomer (ExternalCustomer): Объект внешнего 
+            external_customer (ExternalCustomer): Объект внешнего 
             клиента, содержащий данные для синхронизации.
 
         Returns:
             bool: True, если был создан новый клиент, иначе False.
         """
-        customerMatches: CustomerMatches
-        if externalCustomer.isCompany:
-            customerMatches = self.loadCompany(externalCustomer)
+        customer_matches: CustomerMatches
+        if external_customer.is_company:
+            customer_matches = self.load_company(external_customer)
         else:
-            customerMatches = self.loadPerson(externalCustomer)
+            customer_matches = self.load_person(external_customer)
 
-        customer = customerMatches.customer
+        customer = customer_matches.customer
 
         if customer is None:
             customer = Customer()
-            customer.externalId = externalCustomer.externalId
-            customer.masterExternalId = externalCustomer.externalId
+            customer.external_id = external_customer.external_id
+            customer.master_external_id = external_customer.external_id
 
-        self.populateFields(externalCustomer, customer)
+        self.populate_fields(external_customer, customer)
 
         created = False
-        if customer.internalId is None:
-            customer = self.createCustomer(customer)
+        if customer.internal_id is None:
+            customer = self.create_customer(customer)
             created = True
         else:
-            self.updateCustomer(customer)
+            self.update_customer(customer)
 
-        self.updateContactInfo(externalCustomer, customer)
+        self.update_contact_info(external_customer, customer)
 
-        if customerMatches.has_duplicates:
-            for duplicate in customerMatches.duplicates:
-                self.updateDuplicate(externalCustomer, duplicate)
+        if customer_matches.has_duplicates:
+            for duplicate in customer_matches.duplicates:
+                self.update_duplicate(external_customer, duplicate)
 
-        self.updateRelations(externalCustomer, customer)
-        self.updatePreferredStore(externalCustomer, customer)
+        self.update_relations(external_customer, customer)
+        self.update_preferred_store(external_customer, customer)
 
         return created
 
-    def updateRelations(self, externalCustomer: ExternalCustomer, customer: Customer) -> None:
+    def update_relations(self, external_customer: ExternalCustomer, customer: Customer) -> None:
         """
         Обновляет связи клиента с его списками покупок.
 
         Args:
-            externalCustomer (ExternalCustomer): Объект внешнего клиента.
+            external_customer (ExternalCustomer): Объект внешнего клиента.
             customer (Customer): Объект клиента, данные которого обновляются.
         """
-        consumerShoppingLists = externalCustomer.shoppingLists
-        for consumerShoppingList in consumerShoppingLists:
-            self.customerDataAccess.updateShoppingList(customer, consumerShoppingList)
+        consumer_shopping_lists = external_customer.shopping_lists
+        for consumer_shopping_list in consumer_shopping_lists:
+            self.customer_data_access.update_shopping_list(customer, consumer_shopping_list)
 
-    def updateCustomer(self, customer: Customer) -> Customer:
+    def update_customer(self, customer: Customer) -> Customer:
         """
         Обновляет запись клиента в базе данных.
 
@@ -86,48 +86,48 @@ class CustomerSync:
         Returns:
             Customer: Обновленный объект клиента.
         """
-        return self.customerDataAccess.updateCustomerRecord(customer)
+        return self.customer_data_access.update_customer_record(customer)
 
-    def updateDuplicate(
+    def update_duplicate(
             self,
-            externalCustomer: ExternalCustomer,
+            external_customer: ExternalCustomer,
             duplicate: Optional[Customer]
     ) -> None:
         """
         Обновляет запись дублирующего клиента.
 
         Args:
-            externalCustomer (ExternalCustomer): Объект внешнего клиента.
+            external_customer (ExternalCustomer): Объект внешнего клиента.
             duplicate (Optional[Customer]): Объект дублирующего клиента. 
             Если None, создается новый объект.
         """
         if duplicate is None:
             duplicate = Customer()
-            duplicate.externalId = externalCustomer.externalId
-            duplicate.masterExternalId = externalCustomer.externalId
+            duplicate.external_id = external_customer.external_id
+            duplicate.master_external_id = external_customer.external_id
 
-        duplicate.name = externalCustomer.name
+        duplicate.name = external_customer.name
 
-        if duplicate.internalId is None:
-            self.createCustomer(duplicate)
+        if duplicate.internal_id is None:
+            self.create_customer(duplicate)
         else:
-            self.updateCustomer(duplicate)
+            self.update_customer(duplicate)
 
-    def updatePreferredStore(
+    def update_preferred_store(
             self,
-            externalCustomer: ExternalCustomer,
+            external_customer: ExternalCustomer,
             customer: Customer
     ) -> None:
         """
         Обновляет предпочтительный магазин клиента.
 
         Args:
-            externalCustomer (ExternalCustomer): Объект внешнего клиента.
+            external_customer (ExternalCustomer): Объект внешнего клиента.
             customer (Customer): Объект клиента, данные которого обновляются.
         """
-        customer.preferredStore = externalCustomer.preferredStore
+        customer.preferred_store = external_customer.preferred_store
 
-    def createCustomer(self, customer: Customer) -> Customer:
+    def create_customer(self, customer: Customer) -> Customer:
         """
         Создает новую запись клиента в базе данных.
 
@@ -137,131 +137,122 @@ class CustomerSync:
         Returns:
             Customer: Созданный объект клиента.
         """
-        return self.customerDataAccess.createCustomerRecord(customer)
+        return self.customer_data_access.create_customer_record(customer)
 
-    def populateFields(
+    def populate_fields(
             self,
-            externalCustomer: ExternalCustomer,
+            external_customer: ExternalCustomer,
             customer: Customer
         ) -> None:
         """
         Заполняет поля объекта клиента данными из внешнего источника.
 
         Args:
-            externalCustomer (ExternalCustomer): Объект внешнего клиента.
+            external_customer (ExternalCustomer): Объект внешнего клиента.
             customer (Customer): Объект клиента, который нужно заполнить данными.
         """
-        customer.name = externalCustomer.name
-        if externalCustomer.isCompany:
-            customer.companyNumber = externalCustomer.companyNumber
-            customer.customerType = CustomerType.COMPANY
+        customer.name = external_customer.name
+        if external_customer.is_company:
+            customer.company_number = external_customer.company_number
+            customer.customer_type = CustomerType.COMPANY
         else:
-            customer.customerType = CustomerType.PERSON
+            customer.customer_type = CustomerType.PERSON
 
-    def updateContactInfo(
+    def update_contact_info(
             self,
-            externalCustomer: ExternalCustomer,
+            external_customer: ExternalCustomer,
             customer: Customer
     ) -> None:
         """
         Обновляет контактную информацию клиента.
 
         Args:
-            externalCustomer (ExternalCustomer): Объект внешнего клиента.
+            external_customer (ExternalCustomer): Объект внешнего клиента.
             customer (Customer): Объект клиента, данные которого обновляются.
         """
-        customer.address = externalCustomer.postalAddress
+        customer.address = external_customer.postalAddress
 
-    def loadCompany(
+    def load_company(
         self,
-        externalCustomer: ExternalCustomer
+        external_customer: ExternalCustomer
     ) -> CustomerMatches:
         """
         Загружает информацию о компании-клиенте из базы данных.
 
         Args:
-            externalCustomer (ExternalCustomer): Объект внешнего клиента, 
+            external_customer (ExternalCustomer): Объект внешнего клиента, 
             содержащий данные о компании.
-
-        Raises:
-            ConflictException: Если уже существует клиент с данным внешним идентификатором, 
-                            но он не является компанией, или если внешний идентификатор 
-                            не совпадает с загруженным номером компании.
 
         Returns:
             CustomerMatches: Объект, содержащий информацию о найденных клиентах и их совпадениях.
         """
-        externalId = externalCustomer.externalId
-        companyNumber = externalCustomer.companyNumber
+        external_id = external_customer.external_id
+        company_number = external_customer.company_number
 
-        customerMatches = self.customerDataAccess.loadCompanyCustomer(
-            externalId, companyNumber
+        customer_matches = self.customer_data_access.load_company_customer(
+            external_id, company_number
         )
 
-        if (customerMatches.customer is not None and
-                CustomerType.COMPANY != customerMatches.customer.customerType):
+        if (customer_matches.customer is not None and
+                CustomerType.COMPANY != customer_matches.customer.customer_type):
             raise ConflictException(
-                f"Existing customer for externalCustomer {externalId} "
+                f"Existing customer for externalCustomer {external_id} "
                 "already exists and is not a company"
             )
 
-        if "ExternalId" == customerMatches.matchTerm:
-            customerCompanyNumber = customerMatches.customer.companyNumber
-            if companyNumber != customerCompanyNumber:
-                customerMatches.customer.masterExternalId = None
-                customerMatches.add_duplicate(customerMatches.customer)
-                customerMatches.customer = None
-                customerMatches.matchTerm = None
+        if "ExternalId" == customer_matches.match_term:
+            customer_company_number = customer_matches.customer.company_number
+            if company_number != customer_company_number:
+                customer_matches.customer.master_external_id = None
+                customer_matches.add_duplicate(customer_matches.customer)
+                customer_matches.customer = None
+                customer_matches.match_term = None
 
-        elif "CompanyNumber" == customerMatches.matchTerm:
-            customerExternalId = customerMatches.customer.externalId
-            if (customerExternalId is not None and
-                    externalId != customerExternalId):
+        elif "CompanyNumber" == customer_matches.match_term:
+            customer_external_id = customer_matches.customer.external_id
+            if (customer_external_id is not None and
+                    external_id != customer_external_id):
                 raise ConflictException(
-                    f"Existing customer for externalCustomer {companyNumber} "
-                    f"doesn't match external id {externalId} instead found "
-                    f"{customerExternalId}"
+                    f"Existing customer for externalCustomer {company_number} "
+                    f"doesn't match external id {external_id} instead found "
+                    f"{customer_external_id}"
                 )
 
-            customer = customerMatches.customer
-            customer.externalId = externalId
-            customer.masterExternalId = externalId
-            customerMatches.addDuplicate(None)
+            customer = customer_matches.customer
+            customer.external_id = external_id
+            customer.master_external_id = external_id
+            customer_matches.add_duplicate(None)
 
-        return customerMatches
+        return customer_matches
 
-    def loadPerson(
-            self, externalCustomer: ExternalCustomer
+    def load_person(
+            self, external_customer: ExternalCustomer
     ) -> CustomerMatches:
         """
         Загружает информацию о физическом лице-клиенте из базы данных.
 
         Args:
-            externalCustomer (ExternalCustomer): Объект внешнего клиента, 
+            external_customer (ExternalCustomer): Объект внешнего клиента, 
             содержащий данные о физическом лице.
-
-        Raises:
-            ConflictException: Если уже существует клиент с данным внешним идентификатором, 
-                            но он не является физическим лицом.
 
         Returns:
             CustomerMatches: Объект, содержащий информацию о найденных клиентах и их совпадениях.
         """
-        externalId = externalCustomer.externalId
-        customerMatches = self.customerDataAccess.loadPersonCustomer(
-            externalId
+        external_id = external_customer.external_id
+        customer_matches = self.customer_data_access.load_person_customer(
+            external_id
         )
 
-        if customerMatches.customer is not None:
-            if CustomerType.PERSON != customerMatches.customer.customerType:
+        if customer_matches.customer is not None:
+            if CustomerType.PERSON != customer_matches.customer.customer_type:
                 raise ConflictException(
-                    f"Existing customer for externalCustomer {externalId} "
+                    f"Existing customer for externalCustomer {external_id} "
                     "already exists and is not a person"
                 )
 
-            if "ExternalId" != customerMatches.matchTerm:
-                customer = customerMatches.customer
-                customer.externalId = externalId
-                customer.masterExternalId = externalId
+            if "ExternalId" != customer_matches.match_term:
+                customer = customer_matches.customer
+                customer.external_id = external_id
+                customer.master_external_id = external_id
 
-        return customerMatches
+        return customer_matches
