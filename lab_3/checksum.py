@@ -5,7 +5,9 @@ import re
 
 from json import load
 from typing import Dict, List, Optional
+
 from path import CSV_PATH, JSON_PATH, PATH_TO_PATERNS
+
 
 def read_csv(file_path: str) -> Optional[list[list[str]]]:
     """
@@ -21,6 +23,7 @@ def read_csv(file_path: str) -> Optional[list[list[str]]]:
         for row in for_help:
             data.append(row)
         return data
+
 
 def read_json(file_path: str) -> Optional[dict]:
     """
@@ -67,6 +70,7 @@ def find_invalid_data(patterns: Dict[str, str], data: list) -> list[int]:
             invalid_indices.append(index)
     return invalid_indices
 
+
 def calculate_checksum(row_numbers: List[int]) -> str:
     """
     Вычисляет md5 хеш от списка целочисленных значений.
@@ -84,6 +88,7 @@ def calculate_checksum(row_numbers: List[int]) -> str:
     """
     row_numbers.sort()
     return hashlib.md5(json.dumps(row_numbers).encode('utf-8')).hexdigest()
+
 
 def serialize_result(variant: int, checksum: str) -> None:
     """
@@ -104,11 +109,14 @@ def serialize_result(variant: int, checksum: str) -> None:
     with open("result.json", mode="w", encoding="utf-8") as f:
         json.dump(result, f)
 
+
 if __name__ == "__main__":
-    var=28
-    pattern = read_json(PATH_TO_PATERNS)
+    var = 28
+    patterns = read_json(PATH_TO_PATERNS)
     data = read_csv(CSV_PATH)
-    invalid = find_invalid_data(pattern, data)
+    invalid = find_invalid_data(patterns, data)
+    num_of_errors = len(invalid)
+    print(f"Общее количество строк с ошибками: {num_of_errors}")
     check_sum = calculate_checksum(invalid)
     print(check_sum)
     serialize_result(var, check_sum)
