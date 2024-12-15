@@ -1,0 +1,76 @@
+2024-12-15 19:51:05,903 - INFO - Grumpy has been reset
+2024-12-15 19:51:05,904 - INFO - Grumpy initialized with color: yellow
+2024-12-15 19:51:08,989 - INFO - Game started
+2024-12-15 19:51:09,004 - INFO - Top pipe created at y: 280
+2024-12-15 19:51:09,005 - INFO - Bottom pipe created at y: 280
+2024-12-15 19:51:10,617 - INFO - Top pipe created at y: 132
+2024-12-15 19:51:10,617 - INFO - Bottom pipe created at y: 132
+2024-12-15 19:51:10,796 - INFO - Score updated: 1
+2024-12-15 19:51:11,779 - INFO - Base rect1 repositioned
+2024-12-15 19:51:11,828 - INFO - The pipe has been removed from the game.
+2024-12-15 19:51:11,828 - INFO - The pipe has been removed from the game.
+2024-12-15 19:51:12,232 - INFO - Top pipe created at y: 220
+2024-12-15 19:51:12,232 - INFO - Bottom pipe created at y: 220
+2024-12-15 19:51:12,413 - INFO - Score updated: 2
+2024-12-15 19:51:13,432 - INFO - The pipe has been removed from the game.
+2024-12-15 19:51:13,432 - INFO - The pipe has been removed from the game.
+2024-12-15 19:51:13,833 - INFO - Top pipe created at y: 116
+2024-12-15 19:51:13,834 - INFO - Bottom pipe created at y: 116
+2024-12-15 19:51:14,000 - INFO - Score updated: 3
+2024-12-15 19:51:14,149 - INFO - Base rect2 repositioned
+2024-12-15 19:51:15,029 - INFO - The pipe has been removed from the game.
+2024-12-15 19:51:15,029 - INFO - The pipe has been removed from the game.
+2024-12-15 19:51:15,437 - INFO - Top pipe created at y: 112
+2024-12-15 19:51:15,437 - INFO - Bottom pipe created at y: 112
+2024-12-15 19:51:15,620 - INFO - Score updated: 4
+2024-12-15 19:51:16,642 - INFO - The pipe has been removed from the game.
+2024-12-15 19:51:16,642 - INFO - The pipe has been removed from the game.
+2024-12-15 19:51:16,889 - INFO - Base rect1 repositioned
+2024-12-15 19:51:17,050 - INFO - Top pipe created at y: 128
+2024-12-15 19:51:17,050 - INFO - Bottom pipe created at y: 128
+2024-12-15 19:51:17,210 - INFO - Score updated: 5
+2024-12-15 19:51:18,228 - INFO - The pipe has been removed from the game.
+2024-12-15 19:51:18,228 - INFO - The pipe has been removed from the game.
+2024-12-15 19:51:18,656 - INFO - Top pipe created at y: 220
+2024-12-15 19:51:18,656 - INFO - Bottom pipe created at y: 220
+2024-12-15 19:51:18,823 - INFO - Score updated: 6
+2024-12-15 19:51:19,254 - INFO - Base rect2 repositioned
+2024-12-15 19:51:19,852 - INFO - The pipe has been removed from the game.
+2024-12-15 19:51:19,852 - INFO - The pipe has been removed from the game.
+2024-12-15 19:51:20,257 - INFO - Top pipe created at y: 280
+2024-12-15 19:51:20,257 - INFO - Bottom pipe created at y: 280
+2024-12-15 19:51:20,454 - INFO - Score updated: 7
+2024-12-15 19:51:21,479 - INFO - The pipe has been removed from the game.
+2024-12-15 19:51:21,479 - INFO - The pipe has been removed from the game.
+2024-12-15 19:51:21,865 - INFO - Top pipe created at y: 236
+2024-12-15 19:51:21,865 - INFO - Bottom pipe created at y: 236
+2024-12-15 19:51:22,017 - INFO - Base rect1 repositioned
+2024-12-15 19:51:22,051 - INFO - Score updated: 8
+2024-12-15 19:51:23,086 - INFO - The pipe has been removed from the game.
+2024-12-15 19:51:23,087 - INFO - The pipe has been removed from the game.
+2024-12-15 19:51:23,171 - INFO - Collision detected: Game Over
+2024-12-15 20:08:46,846 - INFO - Grumpy has been reset
+2024-12-15 20:08:46,847 - INFO - Grumpy initialized with color: yellow
+2024-12-15 20:08:48,654 - INFO - Game started
+2024-12-15 20:08:48,670 - INFO - Top pipe created at y: 208
+2024-12-15 20:08:48,670 - INFO - Bottom pipe created at y: 208
+2024-12-15 20:08:50,279 - INFO - Top pipe created at y: 256
+2024-12-15 20:08:50,279 - INFO - Bottom pipe created at y: 256
+2024-12-15 20:08:50,447 - INFO - Score updated: 1
+2024-12-15 20:08:51,432 - INFO - Base rect1 repositioned
+2024-12-15 20:08:51,482 - INFO - The pipe has been removed from the game.
+2024-12-15 20:08:51,482 - INFO - The pipe has been removed from the game.
+2024-12-15 20:08:51,881 - INFO - Top pipe created at y: 160
+2024-12-15 20:08:51,881 - INFO - Bottom pipe created at y: 160
+2024-12-15 20:08:52,081 - INFO - Score updated: 2
+2024-12-15 20:08:53,115 - INFO - The pipe has been removed from the game.
+2024-12-15 20:08:53,115 - INFO - The pipe has been removed from the game.
+2024-12-15 20:08:53,484 - INFO - Top pipe created at y: 200
+2024-12-15 20:08:53,484 - INFO - Bottom pipe created at y: 200
+2024-12-15 20:08:53,684 - INFO - Score updated: 3
+2024-12-15 20:08:53,835 - INFO - Base rect2 repositioned
+2024-12-15 20:08:54,717 - INFO - The pipe has been removed from the game.
+2024-12-15 20:08:54,717 - INFO - The pipe has been removed from the game.
+2024-12-15 20:08:55,083 - INFO - Top pipe created at y: 152
+2024-12-15 20:08:55,083 - INFO - Bottom pipe created at y: 152
+2024-12-15 20:08:55,153 - INFO - Collision detected: Game Over
